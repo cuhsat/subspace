@@ -59,9 +59,9 @@
 //
 // A state is a named marker, at which a scan will continue when provided with this name. A state can simply be created
 // by using it the first time for a scan. States are not permanent and will be deleted by the Drop method, if they point
-// to an already dropped signal. A state can be forked by prefixing its name with an exclamation mark ('!'). The forked
+// to an already dropped signal. A state can be forked by prefixing its name with an exclamation mark (!). The forked
 // state will duplicate its origins marker and will be saved under the forks name (beginning with the exclamation mark).
-// A forked state can also be forked. Its name will begin with two exclamation marks ('!!'). Forking a state is a really
+// A forked state can also be forked. Its name will begin with two exclamation marks (!!). Forking a state is a really
 // powerful concept, as it allows a subspace state to be used without altering it.
 //
 // It is possible to fast forward a state, by simply scanning and ignoring any found signals. It is not possible to

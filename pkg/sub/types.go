@@ -5,7 +5,7 @@ import (
 )
 
 // A space represents a chronological order of signals.
-// Root and head fields are not safe for concurrent usage
+// All structure fields are not safe for concurrent usage
 // and the space must be locked for every access to them.
 //
 // Public stats are not safe for concurrent usage.
