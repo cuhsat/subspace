@@ -7,17 +7,13 @@
 //
 // Usage:
 //
-//	stdin | ss [host] [state] > stdout
+//	stdin | ss [host] > stdout
 //
 // The arguments are:
 //
 //	host
 //		Subspace server host name.
 //		Defaults to localhost.
-//
-//	state
-//		Signal scan state to continue.
-//		Defaults to none.
 package main
 
 import (
@@ -32,11 +28,7 @@ import (
 // and will either send or scan signals, dependent on
 // there is data to be read from the standard input.
 func main() {
-	host, state := "localhost", ""
-
-	if len(os.Args) > 2 {
-		state = os.Args[2]
-	}
+	host := "localhost"
 
 	if len(os.Args) > 1 {
 		host = os.Args[1]
@@ -53,7 +45,7 @@ func main() {
 	} else {
 		ch := make(chan []byte)
 
-		go c.Scan(ch, []byte(state))
+		go c.Scan(ch, sys.Address())
 
 		for v := range ch {
 			fmt.Println(string(v))

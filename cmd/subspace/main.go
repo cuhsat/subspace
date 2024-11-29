@@ -58,7 +58,7 @@ func main() {
 
 	<-exit
 
-	fmt.Printf("⇌ Subspace closed\n")
+	fmt.Printf("⇌ Subspace lost\n")
 }
 
 // Bind the given network address to a subspace relay routine.

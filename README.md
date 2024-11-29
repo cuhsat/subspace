@@ -2,17 +2,17 @@
 Subspace is a fast, memory only signal broker using atomic network operations.
 
 ## How to
-Start a subspace:
+Start a subspace
 ```sh
 $ subspace
 ```
 
-Send a signal:
+Send a signal
 ```sh
 $ echo foo | ss
 ```
 
-Scan for signals:
+Scan for signals
 ```sh
 $ ss
 ```

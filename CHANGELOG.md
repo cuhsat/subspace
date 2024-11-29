@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0] - 2024-11-29
+
+### Changed
+
+- Get state from MAC address.
+
 ## [0.1.2] - 2023-07-01
 
 ### Added
