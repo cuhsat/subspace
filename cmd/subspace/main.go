@@ -41,17 +41,17 @@ import (
 func main() {
 	rt := int(time.Hour / 1e9)
 
-  if e, ok := os.LookupEnv("SUBSPACE_RETENTION"); ok {
+	if e, ok := os.LookupEnv("SUBSPACE_RETENTION"); ok {
 		rt, _ = strconv.Atoi(e)
-  }
+	}
 
-  if len(os.Args) > 1 {
-    go subspace.Relay(os.Args[1:])
-  }
+	if len(os.Args) > 1 {
+		go subspace.Relay(os.Args[1:])
+	}
 
 	s := sub.NewSpace()
-	
-  exit := make(chan os.Signal, 1)
+
+	exit := make(chan os.Signal, 1)
 
 	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -60,7 +60,7 @@ func main() {
 
 	go gc(s, rt)
 
-  fmt.Printf("⇌ Subspace %ds %v\n", rt, os.Args[1:])
+	fmt.Printf("⇌ Subspace %ds %v\n", rt, os.Args[1:])
 
 	<-exit
 
@@ -95,7 +95,7 @@ func gc(s *sub.Space, rt int) {
 			atomic.LoadUint64(&s.StatAlloc),
 			atomic.LoadUint64(&subspace.Rx),
 			atomic.LoadUint64(&subspace.Tx),
-      atomic.LoadUint64(&subspace.Fx),
+			atomic.LoadUint64(&subspace.Fx),
 		})
 
 		if err == nil {

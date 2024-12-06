@@ -46,8 +46,8 @@ type Space struct {
 // by the time the signal they are pointing to is dropped.
 type states struct {
 	sync.RWMutex
-  // Underlying map.
-  m map[string]*signal
+	// Underlying map.
+	m map[string]*signal
 }
 
 // A signal represents a received data package.
@@ -57,10 +57,10 @@ type states struct {
 // A signal with nil as value for data or next has been dropped
 // and will be consumed by the garbage collector soon.
 type signal struct {
-  // Time of receiving.
+	// Time of receiving.
 	time int64
-  // Received data.
+	// Received data.
 	data []byte
-  // Next signal.
+	// Next signal.
 	next *signal
 }

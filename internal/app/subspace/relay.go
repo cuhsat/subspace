@@ -3,7 +3,7 @@ package subspace
 
 import (
 	"net"
-  "runtime"
+	"runtime"
 	"sync/atomic"
 
 	"github.com/cuhsat/subspace/internal/pkg/sys"
@@ -14,14 +14,14 @@ import (
 type Bind func(u *net.UDPConn, s *sub.Space)
 
 var (
-  // Received bytes.
-  Rx uint64
+	// Received bytes.
+	Rx uint64
 	// Transmitted bytes.
-  Tx uint64
-  // Forwarded bytes.
-  Fx uint64
-  // Data channel. 
-  dc atomic.Pointer[chan []byte]
+	Tx uint64
+	// Forwarded bytes.
+	Fx uint64
+	// Data channel.
+	dc atomic.Pointer[chan []byte]
 )
 
 // A relay is a uni-directional communication relay to another subspace relay.
@@ -54,29 +54,29 @@ func NewRelay(host string) (r *relay) {
 //
 // Any calling program will terminate immediately if an error occurs.
 func Relay(hosts []string) {
-  rs := make([]*relay, 0)
+	rs := make([]*relay, 0)
 
-  for _, host := range hosts {
-    rs = append(rs, NewRelay(host))
-  }
- 
-  ch := make(chan []byte)
+	for _, host := range hosts {
+		rs = append(rs, NewRelay(host))
+	}
 
-  dc.Store(&ch)
-  
-  go func() {
-    for b := range *dc.Load() {
-      for _, r := range rs {
-        n, err := r.tu.Write(b)
+	ch := make(chan []byte)
 
-	      if err != nil {
-		      sys.Fatal(err)
-	      }
+	dc.Store(&ch)
 
-	      atomic.AddUint64(&Fx, uint64(n))
-      }
-    } 
-  }()
+	go func() {
+		for b := range *dc.Load() {
+			for _, r := range rs {
+				n, err := r.tu.Write(b)
+
+				if err != nil {
+					sys.Fatal(err)
+				}
+
+				atomic.AddUint64(&Fx, uint64(n))
+			}
+		}
+	}()
 }
 
 // Send receives data from an UDP pseudo connection
@@ -94,9 +94,9 @@ func Send(u *net.UDPConn, s *sub.Space) {
 
 	atomic.AddUint64(&Rx, uint64(n))
 
-  if c := dc.Load(); c != nil {
-    *c <- b[:n]
-  }
+	if c := dc.Load(); c != nil {
+		*c <- b[:n]
+	}
 }
 
 // Scan receives a state id from an UDP pseudo connection

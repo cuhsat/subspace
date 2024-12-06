@@ -24,30 +24,30 @@ func TestMain(m *testing.M) {
 }
 
 func TestRelay(t *testing.T) {
-  if os.Getenv("CI") != "" {
-    t.Skip() // Faulty CI
-  }
+	if os.Getenv("CI") != "" {
+		t.Skip() // Faulty CI
+	}
 
-  t.Run("Relay should relay a signal to a relay", func(t *testing.T) {
-    t.Cleanup(_cleanup)
+	t.Run("Relay should relay a signal to a relay", func(t *testing.T) {
+		t.Cleanup(_cleanup)
 
-    go Relay([]string{"localhost"})
-  
-    s := _s.Load()
-    u := sys.Listen("localhost" + sys.Port1)
+		go Relay([]string{"localhost"})
 
-    defer u.Close()
+		s := _s.Load()
+		u := sys.Listen("localhost" + sys.Port1)
 
-    go Send(u, s)
+		defer u.Close()
 
-    _sendOnce()
+		go Send(u, s)
 
-    time.Sleep(time.Millisecond)
+		_sendOnce()
 
-    if atomic.LoadUint64(&Fx) == 0 {
-      t.Fatal("Signal was not relayed")
-    } 
-  })
+		time.Sleep(time.Millisecond)
+
+		if atomic.LoadUint64(&Fx) == 0 {
+			t.Fatal("Signal was not relayed")
+		}
+	})
 }
 
 func TestSend(t *testing.T) {
@@ -103,17 +103,17 @@ func TestScan(t *testing.T) {
 }
 
 func BenchmarkRelay(b *testing.B) {
-  b.Run("Benchmark Relay", func(b *testing.B) {
-    b.Cleanup(_cleanup)
+	b.Run("Benchmark Relay", func(b *testing.B) {
+		b.Cleanup(_cleanup)
 
-    b.ResetTimer()
+		b.ResetTimer()
 
 		for n := 0; n < b.N; n++ {
-			 Relay([]string{"localhost"})
+			Relay([]string{"localhost"})
 		}
 
 		b.StopTimer()
-  })
+	})
 }
 
 func BenchmarkSend(b *testing.B) {
