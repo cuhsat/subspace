@@ -37,7 +37,7 @@ func main() {
 		}
 	})
 
-	fmt.Printf("⇌ Subspace Proxy%s\n", port)
+	fmt.Printf("⇌ Subspace proxy%s\n", port)
 
 	http.ListenAndServe(port, mux)
 }

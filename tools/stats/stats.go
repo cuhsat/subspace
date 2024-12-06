@@ -28,7 +28,7 @@ func main() {
 
 	defer l.Close()
 
-	fmt.Printf("⇌ Subspace Stats%s\n", port)
+	fmt.Printf("⇌ Subspace stats%s\n", port)
 
 	for {
 		c, err := l.Accept()

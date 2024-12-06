@@ -7,12 +7,12 @@
 //
 // Usage:
 //
-//	stdin | ss [host] > stdout
+//	stdin | ss [relay] > stdout
 //
 // The arguments are:
 //
-//	host
-//		Subspace server host name.
+//	relay
+//		Address of the relay to send or scan signals.
 //		Defaults to localhost.
 package main
 
@@ -24,17 +24,17 @@ import (
 	"github.com/cuhsat/subspace/internal/pkg/sys"
 )
 
-// The main function will open a channel to subspace host
+// The main function will open a channel to subspace relay
 // and will either send or scan signals, dependent on
 // there is data to be read from the standard input.
 func main() {
-	host := "localhost"
+	relay := "localhost"
 
 	if len(os.Args) > 1 {
-		host = os.Args[1]
+		relay = os.Args[1]
 	}
 
-	c := ss.NewChannel(host)
+	c := ss.NewChannel(relay)
 
 	b := sys.Stdin()
 

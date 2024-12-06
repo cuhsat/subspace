@@ -5,17 +5,19 @@
 //
 // Usage:
 //
-//	subspace [retention]
+//	subspace [relay ...]
 //
 // The arguments are:
 //
-//	retention
-//		Signal retention time in seconds.
-//		Defaults to 3600 seconds (1 hour).
+//	relay
+//		Address of the next relay to forward incoming signals to.
 //
 // For communication, two UDP network ports will be opened listening:
 //   - 8211 for incoming signals.
 //   - 8212 for outgoing signals.
+//
+// For configuration, values can be set via environment variables:
+//   - SUBSPACE_RETENTION for retention time in seconds.
 package main
 
 import (
@@ -33,19 +35,23 @@ import (
 	"github.com/cuhsat/subspace/pkg/sub"
 )
 
-// The main function will create a new subspace and binds it to two relay routines,
+// The main function will create a new subspace and binds it to two routines,
 // waiting for incoming pseudo-connections to send or scan signals.
 // It will run its own signal garbage collection periodic in the background.
 func main() {
 	rt := int(time.Hour / 1e9)
 
-	if len(os.Args) > 1 {
-		rt, _ = strconv.Atoi(os.Args[1])
-	}
+  if e, ok := os.LookupEnv("SUBSPACE_RETENTION"); ok {
+		rt, _ = strconv.Atoi(e)
+  }
+
+  if len(os.Args) > 1 {
+    go subspace.Relay(os.Args[1:])
+  }
 
 	s := sub.NewSpace()
-
-	exit := make(chan os.Signal, 1)
+	
+  exit := make(chan os.Signal, 1)
 
 	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -54,22 +60,22 @@ func main() {
 
 	go gc(s, rt)
 
-	fmt.Printf("⇌ Subspace [%ds]\n", rt)
+  fmt.Printf("⇌ Subspace %ds %v\n", rt, os.Args[1:])
 
 	<-exit
 
 	fmt.Printf("⇌ Subspace lost\n")
 }
 
-// Bind the given network address to a subspace relay routine.
-// The given relay routine will be called until the program exits.
-func bind(s *sub.Space, relay subspace.Relay, addr string) {
+// Bind the given network address to a bindable subspace routine.
+// The given routine will be called until the program exits.
+func bind(s *sub.Space, fn subspace.Bind, addr string) {
 	u := sys.Listen(addr)
 
 	defer u.Close()
 
 	for {
-		relay(u, s)
+		fn(u, s)
 	}
 }
 
@@ -83,12 +89,13 @@ func gc(s *sub.Space, rt int) {
 		}
 
 		j, err := json.Marshal(struct {
-			Num, Mem, Rx, Tx uint64
+			Num, Mem, Rx, Tx, Fx uint64
 		}{
 			atomic.LoadUint64(&s.StatCount),
 			atomic.LoadUint64(&s.StatAlloc),
 			atomic.LoadUint64(&subspace.Rx),
 			atomic.LoadUint64(&subspace.Tx),
+      atomic.LoadUint64(&subspace.Fx),
 		})
 
 		if err == nil {

@@ -23,12 +23,39 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestRelay(t *testing.T) {
+  if os.Getenv("CI") != "" {
+    t.Skip() // Faulty CI
+  }
+
+  t.Run("Relay should relay a signal to a relay", func(t *testing.T) {
+    t.Cleanup(_cleanup)
+
+    go Relay([]string{"localhost"})
+  
+    s := _s.Load()
+    u := sys.Listen("localhost" + sys.Port1)
+
+    defer u.Close()
+
+    go Send(u, s)
+
+    _sendOnce()
+
+    time.Sleep(time.Millisecond)
+
+    if atomic.LoadUint64(&Fx) == 0 {
+      t.Fatal("Signal was not relayed")
+    } 
+  })
+}
+
 func TestSend(t *testing.T) {
 	if os.Getenv("CI") != "" {
 		t.Skip() // Faulty CI
 	}
 
-	t.Run("Send should relay a signal to the subspace", func(t *testing.T) {
+	t.Run("Send should send a signal to the subspace", func(t *testing.T) {
 		t.Cleanup(_cleanup)
 
 		s := _s.Load()
@@ -43,7 +70,7 @@ func TestSend(t *testing.T) {
 		time.Sleep(time.Millisecond)
 
 		if atomic.LoadUint64(&s.StatCount) == 0 {
-			t.Fatal("Signal was not relayed")
+			t.Fatal("Signal was not send")
 		}
 	})
 }
@@ -53,7 +80,7 @@ func TestScan(t *testing.T) {
 		t.Skip() // Faulty CI
 	}
 
-	t.Run("Scan should relay a signal from the subspace", func(t *testing.T) {
+	t.Run("Scan should scan a signal from the subspace", func(t *testing.T) {
 		t.Cleanup(_cleanup)
 
 		s := _s.Load()
@@ -70,9 +97,23 @@ func TestScan(t *testing.T) {
 		time.Sleep(time.Millisecond)
 
 		if len(b) == 0 {
-			t.Fatal("Signal was not relayed")
+			t.Fatal("Signal was not scanned")
 		}
 	})
+}
+
+func BenchmarkRelay(b *testing.B) {
+  b.Run("Benchmark Relay", func(b *testing.B) {
+    b.Cleanup(_cleanup)
+
+    b.ResetTimer()
+
+		for n := 0; n < b.N; n++ {
+			 Relay([]string{"localhost"})
+		}
+
+		b.StopTimer()
+  })
 }
 
 func BenchmarkSend(b *testing.B) {

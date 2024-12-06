@@ -6,7 +6,9 @@ CLIENT="../cmd/ss/main.go"
 HOST="localhost"
 NAME="test"
 
-$GO_RUN $SERVER 10 &
+export SUBSPACE_RETENTION=10
+
+$GO_RUN $SERVER &
 
 sleep 1s
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1] - 2024-12-03
+
+### Changed
+
+- Get retention time from environment.
+
 ## [0.2.0] - 2024-11-29
 
 ### Changed
